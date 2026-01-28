@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Radar, RefreshCcw, ExternalLink, TrendingUp, Zap } from 'lucide-react';
-import { geminiService } from '../services/geminiService';
+import { geminiService } from '../services/geminiService.ts';
 
 const TrendRadar: React.FC = () => {
   const [trends, setTrends] = useState<any[]>([]);

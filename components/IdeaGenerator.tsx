@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Lightbulb, Loader2, Sparkles, Wand2, Copy, Check } from 'lucide-react';
-import { geminiService } from '../services/geminiService';
+import { geminiService } from '../services/geminiService.ts';
 
 const IdeaGenerator: React.FC = () => {
   const [niche, setNiche] = useState('');

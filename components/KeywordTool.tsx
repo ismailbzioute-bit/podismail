@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
 import { Search, Loader2, TrendingUp, AlertCircle, CheckCircle2 } from 'lucide-react';
-import { geminiService } from '../services/geminiService';
-import { CompetitionLevel } from '../types';
+import { geminiService } from '../services/geminiService.ts';
+import { CompetitionLevel } from '../types.ts';
 
 const KeywordTool: React.FC = () => {
   const [keyword, setKeyword] = useState('');
