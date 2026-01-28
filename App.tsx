@@ -11,7 +11,10 @@ import ListingGenerator from './components/ListingGenerator.tsx';
 import ProductDemand from './components/ProductDemand.tsx';
 import SaturationChecker from './components/SaturationChecker.tsx';
 import MockupStudio from './components/MockupStudio.tsx';
+import Integrations from './components/Integrations.tsx';
 import Auth from './components/Auth.tsx';
+import LandingPage from './components/LandingPage.tsx';
+import Pricing from './components/Pricing.tsx';
 
 // Simple Context for User Session & Credits
 interface UserData {
@@ -27,6 +30,7 @@ interface UserContextType {
   logout: () => void;
   useCredit: () => boolean;
   upgrade: () => void;
+  isGuest: boolean;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -71,55 +75,60 @@ const App: React.FC = () => {
     localStorage.setItem('podintel_user', JSON.stringify(updated));
   };
 
+  const isGuest = !user;
+
   return (
-    <UserContext.Provider value={{ user, login, logout, useCredit, upgrade }}>
+    <UserContext.Provider value={{ user, login, logout, useCredit, upgrade, isGuest }}>
       <Router>
         <div className="min-h-screen flex bg-slate-50 font-sans text-slate-900">
-          {user && <Sidebar />}
+          <Sidebar />
           
-          <main className={`flex-1 ${user ? 'ml-64' : ''} min-h-screen relative overflow-y-auto`}>
-            {user && (
-              <header className="fixed top-0 right-0 left-64 h-20 bg-white/80 backdrop-blur-xl z-40 border-b border-slate-100 flex items-center justify-between px-10">
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full border border-emerald-100">
-                    <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                    <span className="text-[10px] font-black uppercase tracking-widest">Global Markets Live</span>
-                  </div>
+          <main className="flex-1 ml-64 min-h-screen relative overflow-y-auto">
+            <header className="fixed top-0 right-0 left-64 h-20 bg-white/80 backdrop-blur-xl z-40 border-b border-slate-100 flex items-center justify-between px-10">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full border border-emerald-100">
+                  <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                  <span className="text-[10px] font-black uppercase tracking-widest">Global Markets Live</span>
                 </div>
+              </div>
 
-                <div className="flex items-center gap-6">
-                  <div className="text-right">
-                    <p className="text-sm font-black text-slate-800">{user.name}</p>
-                    <button onClick={logout} className="text-[10px] font-bold text-slate-400 uppercase hover:text-rose-500 transition-colors">Sign Out</button>
+              <div className="flex items-center gap-6">
+                {!user ? (
+                  <div className="flex items-center gap-4">
+                    <Navigate to="/" /> {/* Redirect home if needed, but here we allow browsing */}
+                    <a href="#/auth" className="text-sm font-bold text-slate-600 hover:text-indigo-600">Sign In</a>
+                    <a href="#/auth" className="bg-indigo-600 text-white px-5 py-2 rounded-xl text-sm font-bold shadow-lg shadow-indigo-100">Join Free</a>
                   </div>
-                  <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white font-black shadow-lg shadow-indigo-100">
-                    {user.name.charAt(0).toUpperCase()}
-                  </div>
-                </div>
-              </header>
-            )}
-
-            <div className={user ? "pt-28 pb-10 px-10" : "flex items-center justify-center min-h-screen bg-slate-50"}>
-              <Routes>
-                {user ? (
-                  <>
-                    <Route path="/" element={<Dashboard />} />
-                    <Route path="/keywords" element={<KeywordTool />} />
-                    <Route path="/ideas" element={<IdeaGenerator />} />
-                    <Route path="/demand" element={<ProductDemand />} />
-                    <Route path="/listings" element={<ListingGenerator />} />
-                    <Route path="/trends" element={<TrendRadar />} />
-                    <Route path="/mockups" element={<MockupStudio />} />
-                    <Route path="/saturation" element={<SaturationChecker />} />
-                    <Route path="/architecture" element={<Architecture />} />
-                    <Route path="*" element={<Navigate to="/" replace />} />
-                  </>
                 ) : (
                   <>
-                    <Route path="/auth" element={<Auth onLogin={login} />} />
-                    <Route path="*" element={<Navigate to="/auth" replace />} />
+                    <div className="text-right">
+                      <p className="text-sm font-black text-slate-800">{user.name}</p>
+                      <button onClick={logout} className="text-[10px] font-bold text-slate-400 uppercase hover:text-rose-500 transition-colors">Sign Out</button>
+                    </div>
+                    <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white font-black shadow-lg shadow-indigo-100">
+                      {user.name.charAt(0).toUpperCase()}
+                    </div>
                   </>
                 )}
+              </div>
+            </header>
+
+            <div className="pt-28 pb-10 px-10">
+              <Routes>
+                <Route path="/home" element={<LandingPage />} />
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/keywords" element={<KeywordTool />} />
+                <Route path="/ideas" element={<IdeaGenerator />} />
+                <Route path="/demand" element={<ProductDemand />} />
+                <Route path="/listings" element={<ListingGenerator />} />
+                <Route path="/trends" element={<TrendRadar />} />
+                <Route path="/mockups" element={<MockupStudio />} />
+                <Route path="/saturation" element={<SaturationChecker />} />
+                <Route path="/integrations" element={<Integrations />} />
+                <Route path="/pricing" element={<Pricing />} />
+                <Route path="/architecture" element={<Architecture />} />
+                <Route path="/auth" element={<Auth onLogin={login} />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </div>
           </main>

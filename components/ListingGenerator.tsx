@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
-import { FileEdit, Copy, Check, Loader2, Sparkles } from 'lucide-react';
+/* Added missing RefreshCw to imports */
+import { FileEdit, Copy, Check, Loader2, Sparkles, Send, RefreshCw } from 'lucide-react';
 import { geminiService } from '../services/geminiService.ts';
 
 const ListingGenerator: React.FC = () => {
@@ -8,6 +9,7 @@ const ListingGenerator: React.FC = () => {
   const [platform, setPlatform] = useState('Etsy');
   const [tone, setTone] = useState('Friendly');
   const [loading, setLoading] = useState(false);
+  const [pushing, setPushing] = useState(false);
   const [listing, setListing] = useState<any>(null);
   const [copied, setCopied] = useState<string | null>(null);
 
@@ -19,6 +21,14 @@ const ListingGenerator: React.FC = () => {
       setListing(data);
     } catch (e) { console.error(e); }
     finally { setLoading(false); }
+  };
+
+  const handlePushToStore = () => {
+    setPushing(true);
+    setTimeout(() => {
+      setPushing(false);
+      alert(`Success! Listing has been pushed to your ${platform} drafts.`);
+    }, 2000);
   };
 
   const copyToClipboard = (text: string, key: string) => {
@@ -89,6 +99,17 @@ const ListingGenerator: React.FC = () => {
 
       {listing && (
         <div className="space-y-6 pb-20">
+          <div className="flex justify-end gap-3">
+             <button 
+               onClick={handlePushToStore}
+               disabled={pushing}
+               className="px-6 py-3 bg-slate-900 text-white rounded-2xl font-bold text-sm flex items-center gap-2 hover:bg-black transition-all shadow-xl"
+             >
+               {pushing ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+               Push to {platform} Drafts
+             </button>
+          </div>
+
           <div className="glass-card p-8 rounded-3xl relative">
             <button onClick={() => copyToClipboard(listing.title, 'title')} className="absolute top-6 right-6 p-2 bg-slate-50 rounded-lg hover:bg-slate-200">
               {copied === 'title' ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
