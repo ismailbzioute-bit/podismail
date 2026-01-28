@@ -1,0 +1,8 @@
+{
+  "name": "Bloom SEO - Next-Gen Etsy Intelligence",
+  "description": "A high-performance SEO and analytics platform for Etsy sellers featuring AI listing optimization, competitor reverse analysis, and real-time trend forecasting.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
