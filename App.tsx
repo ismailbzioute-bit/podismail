@@ -1,12 +1,12 @@
 
 import React from 'react';
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Sidebar from './components/Sidebar';
-import Dashboard from './components/Dashboard';
-import KeywordTool from './components/KeywordTool';
-import IdeaGenerator from './components/IdeaGenerator';
-import TrendRadar from './components/TrendRadar';
-import Architecture from './components/Architecture';
+import Sidebar from './components/Sidebar.tsx';
+import Dashboard from './components/Dashboard.tsx';
+import KeywordTool from './components/KeywordTool.tsx';
+import IdeaGenerator from './components/IdeaGenerator.tsx';
+import TrendRadar from './components/TrendRadar.tsx';
+import Architecture from './components/Architecture.tsx';
 
 // Placeholders for remaining tools
 const ComingSoon = ({ title }: { title: string }) => (
