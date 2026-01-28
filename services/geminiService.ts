@@ -1,7 +1,6 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 
-// Always use the process.env.API_KEY directly for initialization.
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 export const geminiService = {
@@ -39,7 +38,6 @@ export const geminiService = {
         }
       }
     });
-    // The response.text property directly returns the string output.
     return JSON.parse(response.text);
   },
 
@@ -70,7 +68,7 @@ export const geminiService = {
   async generateListing(niche: string, platform: string, tone: string) {
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
-      contents: `Generate an SEO-optimized product listing for a ${platform} product in the ${niche} niche. Tone should be ${tone}.`,
+      contents: `Generate an SEO-optimized product listing for a ${platform} product in the ${niche} niche. Tone: ${tone}. Include high-converting title, 5-paragraph description, and 13 tags.`,
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -78,11 +76,52 @@ export const geminiService = {
           properties: {
             title: { type: Type.STRING },
             description: { type: Type.STRING },
-            tags: {
-              type: Type.ARRAY,
-              items: { type: Type.STRING }
-            }
-          }
+            tags: { type: Type.ARRAY, items: { type: Type.STRING } }
+          },
+          required: ["title", "description", "tags"]
+        }
+      }
+    });
+    return JSON.parse(response.text);
+  },
+
+  async analyzeDemand(product: string, niche: string) {
+    const response = await ai.models.generateContent({
+      model: 'gemini-3-flash-preview',
+      contents: `Analyze POD market demand for ${product} in the ${niche} niche. Provide price ranges, top platforms, and trending colors.`,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            demandScore: { type: Type.NUMBER },
+            priceRange: { type: Type.STRING },
+            bestColors: { type: Type.ARRAY, items: { type: Type.STRING } },
+            topPlatform: { type: Type.STRING },
+            competitionLevel: { type: Type.STRING }
+          },
+          required: ["demandScore", "priceRange", "bestColors", "topPlatform", "competitionLevel"]
+        }
+      }
+    });
+    return JSON.parse(response.text);
+  },
+
+  async checkSaturation(phrase: string) {
+    const response = await ai.models.generateContent({
+      model: 'gemini-3-flash-preview',
+      contents: `Check market saturation for the POD slogan: "${phrase}". Assess risk of over-used designs and suggest 3 unique twists.`,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            saturationScore: { type: Type.NUMBER },
+            riskLevel: { type: Type.STRING },
+            uniqueTwists: { type: Type.ARRAY, items: { type: Type.STRING } },
+            advice: { type: Type.STRING }
+          },
+          required: ["saturationScore", "riskLevel", "uniqueTwists", "advice"]
         }
       }
     });
@@ -92,7 +131,7 @@ export const geminiService = {
   async getTrends() {
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
-      contents: `Identify 6 current viral POD trends, rising phrases, or cultural moments that are currently active in late 2024 / early 2025.`,
+      contents: `Identify 6 current viral POD trends for 2025. Return as JSON.`,
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -110,5 +149,24 @@ export const geminiService = {
       }
     });
     return JSON.parse(response.text);
+  },
+
+  async generateMockup(prompt: string) {
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash-image',
+      contents: {
+        parts: [{ text: `High resolution, professional studio photography of a person wearing a white t-shirt mockup with the design concept: ${prompt}. Clean background, cinematic lighting.` }]
+      },
+      config: {
+        imageConfig: { aspectRatio: "1:1" }
+      }
+    });
+    
+    for (const part of response.candidates[0].content.parts) {
+      if (part.inlineData) {
+        return `data:image/png;base64,${part.inlineData.data}`;
+      }
+    }
+    return null;
   }
 };
